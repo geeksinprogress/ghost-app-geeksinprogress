@@ -1,7 +1,44 @@
 {
-	"name":"ghost-app-jekyll-md",
-	"version": "0.1",
-	"dependencies": {
-		"ghost-app": "0.0.2"
-	}
+  "name": "ghost-app-geeksinprogress",
+  "version": "0.0.1",
+  "description": "Ghost App built for Geeks in Progress allowing front matter metadata to control post template and generate the podcast rss feed",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mechinn/ghost-app-geeksinprogress.git"
+  },
+  "author": "Michael Chinn <npm@mechinn.com> (http://mechinn.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mechinn/ghost-app-geeksinprogress/issues"
+  },
+  "homepage": "https://github.com/mechinn/ghost-app-geeksinprogress#readme",
+  "dependencies": {
+    "ghost-app": "0.0.3",
+    "gray-matter": "^2.0.2",
+    "showdown-ghost": "^0.4.0"
+  },
+  "ghost": {
+    "permissions": {
+      "filters": [
+        "prePostsRender",
+        "rss.item",
+        "rss.feed"
+      ],
+      "helpers": [
+        "cond",
+        "eq",
+        "ne",
+        "lt",
+        "le",
+        "gt",
+        "ge",
+        "and",
+        "or"
+      ]
+    }
+  }
 }
