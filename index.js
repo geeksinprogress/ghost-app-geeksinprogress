@@ -41,12 +41,13 @@ var GeeksInProgress = GhostApp.extend({
         return posts;
     },
     rssItemFrontMatter: function(item, post) {
-    	console.log(post);
 		var data = getData(post.markdown);
-		console.log(data);
-		item.custom_elements[0]['content:encoded']._cdata = ignore(item.custom_elements[0]['content:encoded']._cdata);
-		item.description = ignore(item.description);
-		if(data.type == 'podcast') {
+		if(data.layout == 'podcast') {
+			item.description = ignore(item.custom_elements[0]['content:encoded']._cdata);
+			if(data.crew) {
+				console.log('crew found');
+				item.description += " <p>Crew: "+data.crew.join([separator = ', '])+"</p>";
+			}
 			if(data.guid) {
 				item.guid = data.guid;
 			}
@@ -56,13 +57,16 @@ var GeeksInProgress = GhostApp.extend({
 			  'type' : 'audio/mpeg'
 			}
 			item.custom_elements = [
-				{'itunes:subtitle': post.meta_description || downsize(ignore(post.html), {words: 15})},
+				{'itunes:subtitle': post.meta_description || downsize(item.description, {words: 15})},
 				{'itunes:duration': data.duration},
 				{'itunes:explicit': data.explicit || 'yes'}
 			];
 			if(post.image) {
 				item.custom_elements.append({'itunes:image': {_attr: {href: post.image}}});
 			}
+		} else {
+			item.custom_elements[0]['content:encoded']._cdata = ignore(item.custom_elements[0]['content:encoded']._cdata);
+			item.description = ignore(item.description);
 		}
         return item;
     },
@@ -110,7 +114,6 @@ var GeeksInProgress = GhostApp.extend({
     install: function () {},
     uninstall: function () {},
     activate: function () {
-    	console.log(this);
     	this.ghost.helpers.register('cond', function (v1, operator, v2, options) {
 	        switch (operator) {
 	            case '==':
