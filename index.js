@@ -56,7 +56,7 @@ var GeeksInProgress = GhostApp.extend({
 				item.guid = data.guid;
 			}
 			item.enclosure = {
-			  'url'  : data.file,
+			  'url'  : "http://geeksinprogress.com"+data.file,
 			  'size' : data.size,
 			  'type' : 'audio/mpeg'
 			}
