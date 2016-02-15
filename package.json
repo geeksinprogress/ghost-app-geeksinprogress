@@ -39,7 +39,8 @@
         "gt",
         "ge",
         "and",
-        "or"
+        "or",
+	"join"
       ],
       "api": [
         "settings"

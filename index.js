@@ -43,9 +43,13 @@ var GeeksInProgress = GhostApp.extend({
     rssItemFrontMatter: function(item, post) {
 		var data = getData(post.markdown);
 		if(data.layout == 'podcast') {
-			item.description = ignore(item.custom_elements[0]['content:encoded']._cdata);
+			item.custom_elements.some(function(element) {
+				if(element['content:encoded']) {
+					item.description = ignore(element['content:encoded']._cdata);
+					return true;
+				}
+			});
 			if(data.crew) {
-				console.log('crew found');
 				item.description += " <p>Crew: "+data.crew.join([separator = ', '])+"</p>";
 			}
 			if(data.guid) {
@@ -57,12 +61,12 @@ var GeeksInProgress = GhostApp.extend({
 			  'type' : 'audio/mpeg'
 			}
 			item.custom_elements = [
-				{'itunes:subtitle': post.meta_description || downsize(item.description, {words: 15})},
+				{'itunes:subtitle': data.subtitle ||  post.meta_description || downsize(item.description, {words: 15})},
 				{'itunes:duration': data.duration},
 				{'itunes:explicit': data.explicit || 'yes'}
 			];
 			if(post.image) {
-				item.custom_elements.append({'itunes:image': {_attr: {href: post.image}}});
+				item.custom_elements.push({'itunes:image': {_attr: {href: post.image}}});
 			}
 		} else {
 			item.custom_elements[0]['content:encoded']._cdata = ignore(item.custom_elements[0]['content:encoded']._cdata);
@@ -108,7 +112,6 @@ var GeeksInProgress = GhostApp.extend({
 				];
 	    	} 
     	}
-    	console.log(feed);
         return feed;
     },
     install: function () {},
@@ -162,6 +165,28 @@ var GeeksInProgress = GhostApp.extend({
 	    this.ghost.helpers.register('or', function (v1, v2, options) {
 	        return (v1 || v2) ? options.fn(this) : options.inverse(this);
 	    });
+	    this.ghost.helpers.register('join', function(items, block) {
+		var delimiter = block.hash.delimiter || ",", 
+			start = start = block.hash.start || 0, 
+			len = items ? items.length : 0,
+			end = block.hash.end || len,
+			out = "";
+
+		if(end > len) end = len;
+
+		if ('function' === typeof block) {
+			for (i = start; i < end; i++) {
+				if (i > start) out += delimiter;
+				if('string' === typeof items[i])
+					out += items[i];
+				else
+					out += block(items[i]);
+			}
+			return out;
+		} else { 
+			return [].concat(items).slice(start, end).join(delimiter);
+		}
+	});
     },
     deactivate: function () {}
 });
